@@ -6,20 +6,21 @@ The skill lives in [`literature-wiki/`](literature-wiki/SKILL.md). Its `SKILL.md
 
 ## Install
 
-Install Python 3.10 or newer, then install the script dependencies:
+Clone the repository, install Python 3.10 or newer, then install the script dependencies:
 
 ```bash
+git clone https://github.com/Fuminides/literature-wiki-skill.git
+cd literature-wiki-skill
 python3 -m pip install -r requirements.txt
 ```
 
 The source and figure tools also use `pdftotext`, `pdfinfo`, and `pdftoppm` from Poppler. `detex` and Ghostscript (`gs`) are optional. Node.js is needed only for the optional math check.
 
-Clone this repository, then copy the skill directory into the agent's skill directory:
+Copy the skill directory into the agent's skill directory:
 
 ```bash
-git clone https://github.com/Fuminides/literature-wiki-skill.git
 mkdir -p ~/.codex/skills
-cp -R literature-wiki-skill/literature-wiki ~/.codex/skills/
+cp -R literature-wiki ~/.codex/skills/
 ```
 
 For Claude, use `~/.claude/skills/` in the last two commands. You can also use the scripts directly from the cloned repository without installing the agent skill.
