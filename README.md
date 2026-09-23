@@ -23,6 +23,13 @@ These screenshots show *Learning Without Backprop*, a literature wiki built with
   <sub>Paper page · Source details and navigation into the paper analysis.</sub>
 </p>
 
+<p align="center">
+  <a href="docs/images/paper-figure.png"><img src="docs/images/paper-figure.png" width="850" alt="Frenkel paper page showing Figure 1 inline with its source label and caption"></a><br>
+  <sub>Paper figures · Original diagrams appear inline with their source and caption.</sub>
+</p>
+
+Figure 1 in the last screenshot is from [Frenkel, Lefebvre and Bol (2021)](https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2021.629892/full), © 2021 the authors, published under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The screenshot shows it within the example wiki.
+
 ## Install
 
 Clone the repository, install Python 3.10 or newer, then install the script dependencies:
