@@ -4,6 +4,25 @@ An agent skill for building a source-grounded wiki from a curated collection of 
 
 The skill lives in [`literature-wiki/`](literature-wiki/SKILL.md). Its `SKILL.md` is the agent entry point; `references/` holds writing guidance, `scripts/` holds the wiki tools, and `templates/` holds the editing contract copied into new projects. It works with Codex and Claude skill directories.
 
+## Example wiki
+
+These screenshots show *Learning Without Backprop*, a literature wiki built with this workflow. Click an image to see it at full size.
+
+<p align="center">
+  <a href="docs/images/wiki-home.png"><img src="docs/images/wiki-home.png" width="850" alt="Wiki home page with links to the textbook, paper browser, and topic pages"></a><br>
+  <sub>Home page · Start with the textbook or browse the paper collection.</sub>
+</p>
+
+<p align="center">
+  <a href="docs/images/textbook-chapter.png"><img src="docs/images/textbook-chapter.png" width="850" alt="Textbook chapter introducing the field with a chapter list in the sidebar"></a><br>
+  <sub>Textbook · A guided introduction to the topic, grounded in source papers.</sub>
+</p>
+
+<p align="center">
+  <a href="docs/images/paper-page.png"><img src="docs/images/paper-page.png" width="850" alt="Paper page showing the title, authors, source links, and paper navigation"></a><br>
+  <sub>Paper page · Source details and navigation into the paper analysis.</sub>
+</p>
+
 ## Install
 
 Clone the repository, install Python 3.10 or newer, then install the script dependencies:
