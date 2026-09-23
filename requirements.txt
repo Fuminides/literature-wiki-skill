@@ -1,0 +1,4 @@
+PyYAML
+markdown-it-py
+mdit-py-plugins
+Pillow
