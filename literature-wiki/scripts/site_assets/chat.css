@@ -1,0 +1,66 @@
+/* Chat panel injected by .tools/serve_site.py; colors come from the site's style.css tokens. */
+.wc-launch {
+  position: fixed; right: 20px; bottom: 20px; z-index: 30;
+  padding: 10px 16px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--accent); color: var(--bg); font: 600 14px/1 var(--sans); box-shadow: var(--shadow);
+}
+.wc-launch:hover { filter: brightness(1.08); }
+.wc-launch[hidden] { display: none; }
+
+.wc-panel {
+  position: fixed; right: 20px; bottom: 20px; z-index: 30;
+  width: min(420px, calc(100vw - 32px)); height: min(640px, calc(100vh - 96px));
+  display: flex; flex-direction: column;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: var(--shadow), 0 12px 40px rgba(0, 0, 0, .12); font: 14px/1.55 var(--sans);
+}
+.wc-panel[hidden] { display: none; }
+
+.wc-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px 10px 16px; border-bottom: 1px solid var(--line); }
+.wc-head > div { flex: 1; min-width: 0; }
+.wc-page { display: block; color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wc-head button { border: 1px solid var(--line); background: none; color: var(--ink-2); border-radius: 6px; cursor: pointer; font: 13px var(--sans); padding: 3px 9px; }
+.wc-head button:hover { background: var(--sunken); }
+.wc-close { font-size: 18px !important; line-height: 1 !important; padding: 2px 8px 4px !important; }
+
+.wc-log { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; }
+.wc-log:empty::before {
+  content: "Ask anything about this page or the wiki. Answers cite the wiki's pages and papers.";
+  color: var(--muted); font-size: 13px; margin: auto 12px; text-align: center;
+}
+.wc-msg { overflow-wrap: anywhere; }
+.wc-msg > :first-child { margin-top: 0; }
+.wc-msg > :last-child { margin-bottom: 0; }
+.wc-msg p, .wc-msg ul, .wc-msg ol { margin: 0 0 .6em; }
+.wc-msg ul, .wc-msg ol { padding-left: 1.3em; }
+.wc-msg h1, .wc-msg h2, .wc-msg h3, .wc-msg h4 { font-size: 14px; margin: .8em 0 .3em; }
+.wc-msg table { border-collapse: collapse; font-size: 12.5px; display: block; overflow-x: auto; }
+.wc-msg th, .wc-msg td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; }
+.wc-msg .math.block { display: block; overflow-x: auto; margin: .5em 0; }
+.wc-msg a.wl { font-size: 1em; }
+
+.wc-user { align-self: flex-end; max-width: 88%; background: var(--accent-soft); padding: 8px 12px; border-radius: 10px 10px 2px 10px; white-space: pre-wrap; }
+.wc-on { color: var(--muted); font-size: 11.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wc-msg blockquote { margin: 4px 0 6px; padding-left: 8px; border-left: 3px solid var(--line); color: var(--ink-2); font-size: 13px; max-height: 6em; overflow: hidden; }
+.wc-error { color: var(--metric); }
+.wc-status { color: var(--muted); font-style: italic; font-size: 13px; }
+.wc-status:empty { display: none; }
+.wc-live { white-space: pre-wrap; }
+
+.wc-form { border-top: 1px solid var(--line); padding: 10px 12px; display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
+.wc-quote { grid-column: 1 / -1; display: flex; gap: 6px; align-items: flex-start; background: var(--sunken); border-left: 3px solid var(--accent); border-radius: 4px; padding: 4px 6px 4px 8px; font-size: 12.5px; color: var(--ink-2); }
+.wc-quote[hidden] { display: none; }
+.wc-quote span { flex: 1; max-height: 3.2em; overflow: hidden; }
+.wc-quote button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 0 2px; }
+.wc-form textarea {
+  resize: none; max-height: 140px; field-sizing: content; min-height: 40px;
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--bg); color: var(--ink); font: 14px/1.4 var(--sans);
+}
+.wc-form textarea:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+.wc-send { border: 0; border-radius: 8px; padding: 9px 14px; background: var(--accent); color: var(--bg); font: 600 13px var(--sans); cursor: pointer; }
+.wc-send:disabled { opacity: .5; cursor: default; }
+
+@media (max-width: 600px) {
+  .wc-panel { right: 0; bottom: 0; width: 100vw; height: calc(100vh - 56px); border-radius: 12px 12px 0 0; }
+  .wc-launch { right: 16px; bottom: 16px; }
+}

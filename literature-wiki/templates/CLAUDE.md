@@ -122,4 +122,5 @@ python3 .tools/lint_wiki.py --claims --numbers --anchors --backlinks --verify-nu
 python3 .tools/build_site.py                  # regenerate site/ after wiki edits
 python3 .tools/build_site.py --check-figures  # figure numbers vs. local PDFs
 node .tools/check_math.js                     # every TeX expression in site/ parses
+python3 .tools/serve_site.py                  # serve site/ with an "Ask Claude" chat panel
 ```

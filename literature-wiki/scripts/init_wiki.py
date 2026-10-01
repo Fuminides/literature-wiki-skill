@@ -2,7 +2,7 @@
 """Scaffold a source-grounded literature wiki in a project directory.
 
 Creates (never overwrites):
-  .tools/            source reader, lint, site builder, downloaders, KaTeX assets
+  .tools/            source reader, lint, site builder, chat server, downloaders, KaTeX assets
   wiki/              index, vocabulary, pins, log, overview, and the page directories
   AGENTS.md          the editing contract for Codex
   CLAUDE.md          the same editing contract for Claude
@@ -24,7 +24,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 SKILL = HERE.parent
 TOOLS = ["src.py", "lint_wiki.py", "build_site.py", "fetch_figures.py", "download_papers.py",
-         "find_arxiv_ids.py", "prepare_arxiv_sources.py", "prepare_pdf_text.py", "check_math.js"]
+         "find_arxiv_ids.py", "prepare_arxiv_sources.py", "prepare_pdf_text.py", "check_math.js",
+         "serve_site.py"]
 DIRS = ["papers", "concepts", "methods", "datasets", "metrics", "comparisons", "open-questions", "textbook"]
 
 FIGURES_YAML = """\

@@ -113,6 +113,8 @@ python3 .tools/build_site.py && python3 .tools/build_site.py --check-figures
 ```
 
 Choose figures in `.tools/site_figures.yaml`; rebuild after every wiki edit.
+`python3 .tools/serve_site.py` serves the site locally (it prints the URL) with an "Ask Claude"
+chat panel on every page (needs Claude Code); tell the user about it when handing over.
 [references/site.md](references/site.md).
 
 ## Rules that hold in every phase
