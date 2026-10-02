@@ -35,7 +35,9 @@ diff -rq --exclude=__pycache__ --exclude='*:Zone.Identifier' <skill>/scripts <wi
 scripts only in the wiki; leave those alone. For every other file:
 
 - **Missing in the wiki** (for example `serve_site.py`, `site_assets/chat.js`,
-  `site_assets/exam.js`): copy it.
+  `site_assets/exam.js`): copy it, unless it does not fit the wiki's layout, such as a
+  downloader writing to `pdfs/` when the wiki keeps its papers elsewhere. Say what you left
+  out and why.
 - **Different**: read `diff -u` and, when the wiki is in git, `git log -p` for that file, to
   tell which side changed.
   - Only the skill moved on: copy the skill's version.
@@ -44,14 +46,17 @@ scripts only in the wiki; leave those alone. For every other file:
     user it belongs in the skill too.
   - The wiki's file is a different tool under the same name, with its own history: do not
     replace it. Port only the features the user wants, such as exam rendering, and say what
-    was ported.
+    was ported. Exam checks ported into a wiki's own lint must print each error as a line
+    starting `ERROR` that contains `exams/<level>.yaml`: that is how `serve_site.py` rejects
+    a bad batch of generated questions.
 
 ## 3. Update the project files
 
 - `.gitignore`: add `.exam-stats.json` if it is missing.
 - `CLAUDE.md` and `AGENTS.md`: compare with `<skill>/templates/CLAUDE.md`. Add any rule
   paragraph the wiki lacks, such as the one on exam banks; never remove or reword the
-  wiki's own rules. Keep the two files identical if they were.
+  wiki's own rules. Keep the two files identical if they were; one may be a symlink to the
+  other, so edit it once.
 - `README.md`: if there is none, create it from `<skill>/templates/README.md`, with
   `{name}` from `wiki.yaml` and `{topic}` from `CLAUDE.md`. If there is one without the
   chat and exam sections, offer to add them from the template.
