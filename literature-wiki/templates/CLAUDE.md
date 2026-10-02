@@ -99,6 +99,11 @@ Textbook chapters (`wiki/textbook/NN-slug.md`, frontmatter `type: chapter` and `
 explain the field rather than one paper. They follow the same evidence contract, end with
 "Key points" and then "Where to read next", and label every illustration of our own as ours.
 
+Exam banks (`wiki/exams/easy.yaml`, `medium.yaml`, `hard.yaml`) test understanding of the
+field, not who did what: questions and options never link papers or name authors. Each
+question lists under `sources` the wiki pages that establish its answer, and its explanations
+follow the same evidence contract. Written questions belong in the hard bank only.
+
 ## Workflow
 
 1. Select the next planned paper from `wiki/index.md`.

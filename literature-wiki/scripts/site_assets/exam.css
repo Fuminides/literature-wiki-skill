@@ -1,0 +1,59 @@
+/* Exam pages (build_site.py renders them from wiki/exams/*.yaml); colors come from style.css. */
+.exam-levels { list-style: none; padding: 0; display: grid; gap: 12px; }
+.exam-levels a { display: grid; grid-template-columns: 90px 1fr auto; gap: 4px 16px; align-items: baseline;
+  padding: 14px 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); }
+.exam-levels a:hover { text-decoration: none; border-color: var(--accent); }
+.exam-levels b { font-size: 18px; color: var(--accent); }
+.exam-levels .desc { color: var(--ink-2); }
+.exam-levels .n { color: var(--muted); font-size: 13px; white-space: nowrap; }
+
+.exam-questions { padding-left: 1.4em; }
+.exam .q { margin: 0 0 28px; padding: 0 0 0 4px; }
+.exam .q::marker { font-weight: 650; color: var(--muted); }
+.q-text > :first-child { margin-top: 0; }
+.q-options { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; }
+.q-options > li { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-family: var(--sans); font-size: 15px; }
+.q-options label { display: flex; gap: 10px; align-items: baseline; padding: 9px 12px; cursor: pointer; }
+.q-options input { flex: none; accent-color: var(--accent); }
+/* the selection highlight applies until grading disables the inputs */
+.q-options > li:has(input:checked:not(:disabled)) { border-color: var(--accent); background: var(--accent-soft); }
+.q-options .why { padding: 0 12px 10px 36px; font-size: 14px; color: var(--ink-2); }
+.q-options .why > :first-child { margin-top: 0; }
+.q-options .why > :last-child { margin-bottom: 0; }
+.exam textarea { width: 100%; margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--surface); color: var(--ink); font: 15px/1.5 var(--sans); resize: vertical; }
+.exam textarea:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+
+/* after grading */
+.q.correct::marker { color: var(--method); }
+.q.incorrect::marker, .q.unanswered::marker { color: var(--metric); }
+.q.partial::marker { color: var(--dataset); }
+.q-options > li.correct { border-color: var(--method); background: color-mix(in srgb, var(--method) 9%, var(--surface)); }
+.q-options > li.chosen:not(.correct) { border-color: var(--metric); background: color-mix(in srgb, var(--metric) 9%, var(--surface)); }
+.q-options > li.correct label::after { content: "Correct answer"; margin-left: auto; font-size: 12px; font-weight: 600; color: var(--method); white-space: nowrap; }
+.q-options > li.chosen:not(.correct) label::after { content: "Your answer"; margin-left: auto; font-size: 12px; font-weight: 600; color: var(--metric); white-space: nowrap; }
+.q-options input:disabled + span { color: var(--ink); }
+.q-grade, .model-answer { margin-top: 10px; padding: 10px 14px; border-radius: 8px; background: var(--sunken); font-size: 14.5px; }
+.q-grade .verdict { font-weight: 650; font-family: var(--sans); }
+.q.correct .q-grade .verdict { color: var(--method); }
+.q.partial .q-grade .verdict { color: var(--dataset); }
+.q.incorrect .q-grade .verdict { color: var(--metric); }
+.model-answer h4 { margin: .2em 0 .3em; font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.q-review { margin-top: 8px; font-family: var(--sans); font-size: 13.5px; color: var(--muted); }
+.q-explain { margin-top: 10px; font-size: 13px; padding: 4px 12px; cursor: pointer; background: none; font-family: var(--sans); }
+
+/* hidden means hidden, whatever display a class sets (.btn, .exam-result) */
+.exam [hidden] { display: none; }
+.exam-result { display: flex; gap: 20px; align-items: flex-start; padding: 16px 20px; margin: 0 0 28px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-family: var(--sans); font-size: 15px; }
+.exam-result .score { font-size: 15px; color: var(--muted); white-space: nowrap; }
+.exam-result .score b { font-size: 34px; color: var(--ink); }
+.exam-result p { margin: 0 0 8px; }
+.exam-actions button { cursor: pointer; font-family: var(--sans); }
+
+/* practice counts and new questions (served by .tools/serve_site.py) */
+.exam-status, .exam-note { font-family: var(--sans); font-size: 14px; color: var(--ink-2); background: var(--sunken);
+  border-radius: 8px; padding: 8px 12px; }
+.exam-status .btn { font-size: 13px; padding: 3px 10px; margin-left: 4px; cursor: pointer; }
+.exam-note { border-left: 3px solid var(--accent); }
+.q-count { margin-top: 4px; font-family: var(--sans); font-size: 12.5px; color: var(--muted); }

@@ -106,14 +106,23 @@
     if (e.key === "Escape") setOpen(false);
   });
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
     const question = input.value.trim();
     if (!question || busy) return;
-    const user = { role: "user", text: question, quote, page: pageTitle };
+    input.value = "";
+    ask(question, question, quote);
+    setQuote("");
+  });
+
+  // Other scripts on the page (the exams) post questions here; the log shows `label` instead.
+  window.wikiChat = { ask: (question, label) => { setOpen(true); ask(question, label, ""); } };
+
+  async function ask(question, label, quoted) {
+    if (busy) return;
+    const user = { role: "user", text: label, quote: quoted, page: pageTitle };
     state.messages.push(user); save();
     addMessage(user);
-    input.value = ""; setQuote("");
     busy = true; send.disabled = true;
 
     const bubble = addMessage({ role: "assistant", html: '<div class="wc-status">Thinking…</div><div class="wc-live"></div>' });
@@ -136,7 +145,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          question, selection: user.quote, session: state.session,
+          question, selection: quoted, session: state.session,
           page: location.pathname, title: pageTitle,
         }),
       });
@@ -162,5 +171,5 @@
     addMessage(result);
     busy = false; send.disabled = false;
     input.focus();
-  });
+  }
 })();

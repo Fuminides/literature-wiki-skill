@@ -198,7 +198,7 @@ def main() -> None:
     write_new(root / "wiki.yaml", f'name: "{args.name}"\nmark: "{mark}"\n', created)
     write_new(root / "papers.csv", "index,title,year,venue,category,priority,direct_pdf_url\n", created)
     write_new(root / "references.bib", "", created)
-    write_new(root / ".gitignore", "__pycache__/\n*.py[cod]\n.venv/\n*:Zone.Identifier\n.DS_Store\n", created)
+    write_new(root / ".gitignore", "__pycache__/\n*.py[cod]\n.venv/\n*:Zone.Identifier\n.DS_Store\n.exam-stats.json\n", created)
 
     print(f"Scaffolded {root} ({len(created)} new files or directories).")
     for item in created:

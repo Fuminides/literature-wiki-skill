@@ -45,14 +45,16 @@ opens straight from disk with no server or network. Rebuild after every wiki edi
 `python3 .tools/serve_site.py` serves `site/` at http://127.0.0.1:8765, or the next free port
 (`--port` to start elsewhere, `--model` to pick a Claude model), and adds an "Ask Claude"
 panel to every page. Each question runs Claude Code in the project directory with read-only
-tools, so it follows `CLAUDE.md` and can open the wiki pages, PDFs and sources. Claude is told which page the
-reader is on and any passage they highlighted. Answers cite with `[[...]]` links, rendered
-like the site's own. The conversation follows the reader across pages in a browser tab.
+tools, so it follows `CLAUDE.md` and can open the wiki pages, PDFs and sources. Claude is
+told which page the reader is on and any passage they highlighted. Answers cite with
+`[[...]]` links, rendered like the site's own. The conversation follows the reader across
+pages in a browser tab.
 
 - Needs the `claude` CLI, logged in. Questions count against the user's Claude usage.
 - The server injects the panel at request time (`.tools/site_assets/chat.js`, `chat.css`),
   so `site/` stays a plain offline site and needs no rebuild for the chat.
 - It listens on 127.0.0.1 only and refuses requests from other origins.
+- On exam pages it also grades written answers ([exams.md](exams.md)).
 
 ## Checks before handing the site over
 

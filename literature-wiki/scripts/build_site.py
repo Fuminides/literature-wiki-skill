@@ -7,7 +7,7 @@ $$...$$ in the wiki are TeX, rendered in the browser by a vendored KaTeX; write
 a literal dollar sign as \\$. Figures are
 chosen in .tools/site_figures.yaml; see the comment at the top of that file.
 
-Usage: python3 .tools/build_site.py [--check-figures]
+Usage: python3 .tools/build_site.py [--check-figures | --exams]   (--exams: only the exam pages)
 """
 
 from __future__ import annotations
@@ -350,6 +350,9 @@ def sidebar(current: Page | None, pages: dict[str, Page], ctx: dict) -> str:
 
     parts = [f'<a class="home{" on" if not current else ""}" href="{prefix}index.html">Home</a>',
              a("overview", "Overview")]
+    if ctx["exams"]:
+        on = ' class="on"' if cur.startswith("exams/") else ""
+        parts.append(f'<a{on} href="{prefix}exams/index.html">Exams</a>')
     for typ, directory, label in SECTIONS:
         rels = [r for r in pages if pages[r].type == typ]
         if not rels:
@@ -412,7 +415,7 @@ KATEX_HEAD = """<link rel="stylesheet" href="{prefix}assets/katex/katex.min.css"
 """
 
 
-def layout(title: str, prefix: str, nav: str, content: str, wide: bool = False) -> str:
+def layout(title: str, prefix: str, nav: str, content: str, wide: bool = False, head: str = "") -> str:
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -420,7 +423,7 @@ def layout(title: str, prefix: str, nav: str, content: str, wide: bool = False) 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)} · {esc(WIKI_NAME)}</title>
 <link rel="stylesheet" href="{prefix}assets/style.css">
-{KATEX_HEAD.format(prefix=prefix) if 'class="math ' in content else ""}<script>try{{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
+{KATEX_HEAD.format(prefix=prefix) if 'class="math ' in content else ""}{head}<script>try{{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 </head>
 <body data-prefix="{prefix}">
 <header class="topbar">
@@ -525,7 +528,7 @@ def render_home(pages: dict[str, Page], ctx: dict) -> str:
   <h1>{esc(WIKI_NAME)}</h1>
   <div class="hero-intro">{intro_html}</div>
   <p class="hero-links">{f'<a class="btn primary" href="{pages[chapters(pages)[0]].href}">Start the textbook</a>' if chapters(pages) else ""}
-  <a class="btn" href="overview.html">Read the overview</a>
+  <a class="btn" href="overview.html">Read the overview</a>{' <a class="btn" href="exams/index.html">Test yourself</a>' if ctx["exams"] else ""}
   <a class="btn" href="#papers">Browse papers</a> <a class="btn" href="#concepts">Concepts</a></p>
   <div class="stats">{stats}</div>
 </section>
@@ -545,6 +548,99 @@ def render_home(pages: dict[str, Page], ctx: dict) -> str:
 Figures are reproduced from the papers for private reference; captions are the authors' own.</p>
 """
     return layout("Home", "", sidebar(None, pages, ctx), f'<div class="home">{content}</div>', wide=True)
+
+
+# ---------------------------------------------------------------- exams
+
+EXAMS = WIKI / "exams"
+# Question banks wiki/exams/<level>.yaml; the writing rules are in the skill's references/exams.md.
+LEVELS = {
+    "easy": ("Easy", "Core ideas: what the main concepts mean and what each family of methods is for."),
+    "medium": ("Medium", "How and why: mechanisms, trade-offs, and how the approaches compare."),
+    "hard": ("Hard", "Reasoning in new situations: choose, justify and diagnose, partly in your own words."),
+}
+
+
+def load_exams() -> dict[str, dict]:
+    return {level: yaml.safe_load((EXAMS / f"{level}.yaml").read_text(encoding="utf-8"))
+            for level in LEVELS if (EXAMS / f"{level}.yaml").exists()}
+
+
+def render_exam(level: str, bank: dict, pages: dict[str, Page], ctx: dict) -> str:
+    # Rendering the text as a stand-in page reuses the site's links and math.
+    here = Page(f"exams/{level}", {"type": "exam"}, "", f"{LEVELS[level][0]} exam")
+    prefix = rel_prefix(here.rel)
+
+    def block(text) -> str:
+        return render_body(Page(here.rel, {}, str(text), ""), pages, [])
+
+    def inline(text) -> str:
+        return re.sub(r"\A<p>(.*)</p>\s*\Z", r"\1", block(text), flags=re.S)
+
+    items = []
+    for q in bank["questions"]:
+        if q["kind"] == "choice":
+            options = "".join(
+                f'<li{" data-correct" if o.get("correct") else ""}><label><input type="radio" name="{esc(q["id"])}">'
+                f'<span>{inline(o["text"])}</span></label><div class="why" hidden>{block(o["why"])}</div></li>'
+                for o in q["options"])
+            answer = f'<ul class="q-options">{options}</ul>'
+        else:
+            points = "".join(f"<li>{inline(p)}</li>" for p in q["rubric"])
+            answer = ('<textarea rows="5" placeholder="Answer in your own words…"></textarea>'
+                      '<div class="q-grade" hidden></div>'
+                      f'<div class="model-answer" hidden><h4>A full answer</h4>{block(q["answer"])}'
+                      f'<h4>The points it makes</h4><ul>{points}</ul></div>')
+        review = " · ".join(f'<a class="wl wl-{pages[s].type}" href="{prefix}{pages[s].href}">{esc(pages[s].title)}</a>'
+                            for s in q.get("sources", []) if s in pages)
+        items.append(f'<li class="q" data-id="{esc(q["id"])}" data-kind="{q["kind"]}" hidden>'
+                     f'<div class="q-text">{block(q["question"])}</div>{answer}'
+                     f'<div class="q-review" hidden>Review: {review}</div></li>')
+
+    name, about = LEVELS[level]
+    n, per = len(bank["questions"]), bank["per_attempt"]
+    content = (f'<article class="page page-exam"><header class="page-head"><div class="kicker">Exam</div>'
+               f'<h1>{name} exam</h1><div class="page-meta">{per} questions per attempt, drawn from {n}</div></header>'
+               f'<div class="prose"><p>{esc(about)}</p>{exhausted_note(bank)}'
+               f'<p class="exam-status" hidden></p>'
+               f'<div class="exam" data-level="{level}" data-per-attempt="{per}">'
+               f'<section class="exam-result" hidden></section><ol class="exam-questions">{"".join(items)}</ol>'
+               f'<p class="exam-actions"><button class="btn primary exam-submit">Submit answers</button> '
+               f'<button class="btn exam-new">New attempt</button></p></div></div></article>'
+               f'<script src="{prefix}assets/exam.js"></script>')
+    head = f'<link rel="stylesheet" href="{prefix}assets/exam.css">\n'
+    return layout(here.title, prefix, sidebar(here, pages, ctx), content, head=head)
+
+
+def exhausted_note(bank: dict) -> str:
+    """A bank marked `exhausted` holds every significant question the wiki supports at its level."""
+    if not bank.get("exhausted"):
+        return ""
+    return f'<p class="exam-note">No new questions will be added: {esc(bank["exhausted"])}</p>'
+
+
+def write_exams(pages: dict[str, Page], ctx: dict) -> None:
+    (SITE / "exams").mkdir(exist_ok=True)
+    (SITE / "exams" / "index.html").write_text(render_exams_index(pages, ctx), encoding="utf-8")
+    for level, bank in ctx["exams"].items():
+        (SITE / "exams" / f"{level}.html").write_text(render_exam(level, bank, pages, ctx), encoding="utf-8")
+
+
+def render_exams_index(pages: dict[str, Page], ctx: dict) -> str:
+    here = Page("exams/index", {"type": "exam"}, "", "Exams")
+    cards = "".join(
+        f'<li><a href="{level}.html"><b>{LEVELS[level][0]}</b><span class="desc">{esc(LEVELS[level][1])}</span>'
+        f'<span class="n">{bank["per_attempt"]} of {len(bank["questions"])} questions'
+        f'{" · complete" if bank.get("exhausted") else ""}</span></a></li>'
+        for level, bank in ctx["exams"].items())
+    content = (f'<article class="page page-exam"><header class="page-head"><div class="kicker">Exams</div>'
+               f'<h1>Test yourself</h1></header><div class="prose">'
+               f'<p>The questions test understanding of the field, not which paper did what. Each attempt '
+               f'draws a fresh set. After you submit, every answer is explained and linked to the pages to '
+               f'review. Served with <code>.tools/serve_site.py</code>, Claude also grades written answers '
+               f'and explains any mistake in the chat.</p><ul class="exam-levels">{cards}</ul></div></article>')
+    head = '<link rel="stylesheet" href="../assets/exam.css">\n'
+    return layout("Exams", rel_prefix(here.rel), sidebar(here, pages, ctx), content, head=head)
 
 
 def search_index(pages: dict[str, Page], ctx: dict) -> str:
@@ -594,6 +690,12 @@ def main() -> None:
     if "--check-figures" in sys.argv:
         raise SystemExit(1 if check_figures(pages) else 0)
     entries, categories = index_entries()
+    if "--exams" in sys.argv:
+        # Re-render only the exam pages, e.g. after a bank grew, leaving the rest of site/ in place.
+        shutil.copytree(ASSETS, SITE / "assets", dirs_exist_ok=True)
+        write_exams(pages, {"categories": categories, "short": short_names(), "exams": load_exams()})
+        print(f"Rendered the exam pages into {(SITE / 'exams').relative_to(ROOT)}/")
+        return
     inbound: dict[str, set[str]] = {}
     for p in pages.values():
         for t in p.out_links:
@@ -618,13 +720,15 @@ def main() -> None:
                 figures.setdefault(rel, []).append(fig)
 
     ctx = {"entries": entries, "categories": categories, "short": short_names(), "bib": bibtex_entries(),
-           "arxiv": arxiv_ids(), "inbound": inbound, "figures": figures}
+           "arxiv": arxiv_ids(), "inbound": inbound, "figures": figures, "exams": load_exams()}
     for p in pages.values():
         out = SITE / p.href
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(render_page(p, pages, ctx), encoding="utf-8")
     (SITE / "index.html").write_text(render_home(pages, ctx), encoding="utf-8")
     (SITE / "assets" / "search-index.js").write_text(search_index(pages, ctx), encoding="utf-8")
+    if ctx["exams"]:
+        write_exams(pages, ctx)
     n_figs = sum(len(v) for v in figures.values())
     print(f"Built {len(pages) + 1} pages with {n_figs} figures into {SITE.relative_to(ROOT)}/")
 

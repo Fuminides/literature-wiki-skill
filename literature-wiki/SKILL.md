@@ -117,6 +117,17 @@ Choose figures in `.tools/site_figures.yaml`; rebuild after every wiki edit.
 chat panel on every page (needs Claude Code); tell the user about it when handing over.
 [references/site.md](references/site.md).
 
+### 8. Exams
+
+Three question banks (easy, medium, hard) that test understanding of the field, not
+memory of which paper did what. Easy and medium are multiple choice; hard adds written
+answers that Claude grades when the site is served with `serve_site.py`. Read
+[references/exams.md](references/exams.md) first, and pilot a few questions per level
+with the user. Check: `python3 .tools/lint_wiki.py` reports 0 errors, then rebuild the site.
+While the site is served, practice counts drive the banks: once every question of a level has
+been answered often enough, Claude adds new ones, or marks the bank `exhausted` when the wiki
+supports no further significant questions.
+
 ## Rules that hold in every phase
 
 - **Evidence only from the corpus.** Never fill a gap from memory or from a related

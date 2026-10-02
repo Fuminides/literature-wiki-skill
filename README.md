@@ -70,6 +70,8 @@ The scaffold creates `papers.csv` for your curated corpus, `wiki/` for the pages
 
 To ask questions while you read, run `python3 .tools/serve_site.py` and open the URL it prints (http://127.0.0.1:8765 unless that port is taken). Every page then has an "Ask Claude" panel that knows which page you are on and any passage you highlight, and answers with links into the wiki. It needs [Claude Code](https://claude.com/claude-code) installed and logged in.
 
+The site can also hold easy, medium and hard exams that test understanding of the field rather than recall of individual papers. Multiple-choice questions are graded in the browser. When the site is served this way, Claude grades written answers and explains your mistakes. The server also counts how often each question has been answered, and once you have practised a level enough, Claude writes new questions for it. If the wiki has nothing significant left to ask at that level, the exam page says so instead.
+
 The scripts contact arXiv or Semantic Scholar only when you run the source discovery and download commands. Download only copies you are allowed to use. The vendored KaTeX files retain their own [MIT license](literature-wiki/scripts/site_assets/katex/LICENSE).
 
 ## License

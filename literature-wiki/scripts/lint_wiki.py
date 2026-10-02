@@ -479,6 +479,84 @@ def verify_number_checks(pages: dict[str, Page], lint: Lint) -> None:
                     lint.warn(rel, f"number {token!r} not found in text of {', '.join(sorted(keys))}; check PDF: {snippet!r}")
 
 
+EXAM_LEVELS = ("easy", "medium", "hard")
+
+
+def exam_checks(pages: dict[str, Page], lint: Lint) -> None:
+    """Question banks wiki/exams/<level>.yaml (the skill's references/exams.md)."""
+    for path in sorted((WIKI / "exams").glob("*.yaml")):
+        name = f"exams/{path.name}"
+        if path.stem not in EXAM_LEVELS:
+            lint.error(name, f"exam banks are named {', '.join(EXAM_LEVELS)}")
+            continue
+        try:
+            bank = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        except yaml.YAMLError as exc:
+            lint.error(name, f"invalid YAML: {exc}")
+            continue
+        questions = bank.get("questions") or []
+        per = bank.get("per_attempt")
+        if not isinstance(per, int) or not 0 < per <= len(questions):
+            lint.error(name, "per_attempt must be between 1 and the number of questions")
+        if "exhausted" in bank and not (isinstance(bank["exhausted"], str) and bank["exhausted"].strip()):
+            lint.error(name, "exhausted must be a sentence saying why no further questions are possible")
+        seen: set[str] = set()
+        for q in questions:
+            where = f"{name} {q.get('id')}"
+            if not q.get("id") or q["id"] in seen:
+                lint.error(where, "every question needs a unique id")
+            seen.add(q.get("id"))
+            kind = q.get("kind")
+            if kind not in {"choice", "written"}:
+                lint.error(where, "kind must be choice or written")
+                continue
+            if kind == "written" and path.stem != "hard":
+                lint.error(where, "written questions belong in the hard exam")
+            if not q.get("question"):
+                lint.error(where, "missing question")
+            sources = q.get("sources") or []
+            if not sources:
+                lint.error(where, "sources must list the wiki pages that establish the answer")
+            for source in sources:
+                if source not in pages:
+                    lint.error(where, f"source is not a wiki page: {source}")
+            asked = [str(q.get("question", ""))]
+            if kind == "choice":
+                options = q.get("options") or []
+                if not 3 <= len(options) <= 5:
+                    lint.error(where, "a choice question has 3 to 5 options")
+                if sum(bool(o.get("correct")) for o in options) != 1:
+                    lint.error(where, "exactly one option must be correct")
+                if any(not o.get("text") or not o.get("why") for o in options):
+                    lint.error(where, "every option needs text and why")
+                asked += [str(o.get("text", "")) for o in options]
+                explained = [str(o.get("why", "")) for o in options]
+            else:
+                if not q.get("answer") or len(q.get("rubric") or []) < 2:
+                    lint.error(where, "a written question needs an answer and at least 2 rubric points")
+                explained = [str(q.get("answer", "")), *map(str, q.get("rubric") or [])]
+            # The exams test knowledge of the field, not who did what.
+            for text in asked:
+                if PAPER_LINK_RE.search(text):
+                    lint.error(where, "questions and options must not link papers; cite them in why/answer")
+                elif re.search(r"\bet al\b", text):
+                    lint.warn(where, f"question or option names authors: {text[:80]!r}")
+            for text in asked + explained:
+                for target in LINK_RE.findall(text):
+                    if target not in pages:
+                        lint.error(where, f"broken wiki link [[{target}]]")
+            for text in explained:
+                if PAPER_LINK_RE.search(text) and not LOCATOR_RE.search(text):
+                    snippet = re.sub(r"\s+", " ", text)[:80]
+                    lint.error(where, f"paper claim has no locator: {snippet!r}")
+        # With four options, the correct one should be the longest about a quarter of the time.
+        choice = [q for q in questions if q.get("kind") == "choice" and q.get("options")]
+        cued = sum(bool(max(q["options"], key=lambda o: len(str(o.get("text", "")))).get("correct")) for q in choice)
+        if len(choice) >= 4 and cued * 3 > len(choice):
+            lint.warn(name, f"the correct option is the longest in {cued} of {len(choice)} questions; "
+                            "length gives the answer away")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--claims", action="store_true", help="require locators on paper-backed claims")
@@ -501,6 +579,7 @@ def main() -> int:
         return 0
 
     structural_checks(pages, lint)
+    exam_checks(pages, lint)
     if args.claims:
         claim_checks(pages, lint)
     if args.numbers:
