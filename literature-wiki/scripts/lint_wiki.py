@@ -437,7 +437,9 @@ def source_text(key: str, pages: dict[str, Page], pdfs: dict[str, Path], cache: 
     tex = page.meta.get("source_text") if page else None
     if tex and (ROOT / tex).is_file():
         parts.append((ROOT / tex).read_text(encoding="utf-8", errors="ignore"))
-    return re.sub(r"\s+", " ", " ".join(parts))
+    text = re.sub(r"\s+", " ", " ".join(parts))
+    # PDF layout extraction can split a thousands separator as "7, 850".
+    return re.sub(r"(?<=\d), (?=\d{3}(?:\D|$))", ",", text)
 
 
 def verify_number_checks(pages: dict[str, Page], lint: Lint) -> None:
