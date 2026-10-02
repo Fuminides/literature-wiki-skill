@@ -48,10 +48,11 @@ python3 <skill-directory>/scripts/init_wiki.py <project> --name "â€¦" --topic "â
 
 It creates `.tools/` (all scripts plus the site assets and vendored KaTeX), `wiki/` with
 index, vocabulary, pins, log and overview, `AGENTS.md` and `CLAUDE.md` (the editing
-contract; read it now, it governs every later phase), `wiki.yaml`, `papers.csv`,
-`references.bib`. It never overwrites. `<skill-directory>` is the installed
-`literature-wiki` directory, such as `~/.codex/skills/literature-wiki` or
-`~/.claude/skills/literature-wiki`. Check: `python3 .tools/lint_wiki.py` reports 0 errors.
+contract; read it now, it governs every later phase), a `README.md` for the people who will
+read the wiki, `wiki.yaml`, `papers.csv`, `references.bib`. It never overwrites.
+`<skill-directory>` is the installed `literature-wiki` directory, such as
+`~/.codex/skills/literature-wiki` or `~/.claude/skills/literature-wiki`. Check:
+`python3 .tools/lint_wiki.py` reports 0 errors.
 
 ### 2. Corpus
 
@@ -115,6 +116,8 @@ python3 .tools/build_site.py && python3 .tools/build_site.py --check-figures
 Choose figures in `.tools/site_figures.yaml`; rebuild after every wiki edit.
 `python3 .tools/serve_site.py` serves the site locally (it prints the URL) with an "Ask Claude"
 chat panel on every page (needs Claude Code); tell the user about it when handing over.
+The project's `README.md` explains the chat and exams to readers; keep it accurate if you
+change how the project is set up.
 [references/site.md](references/site.md).
 
 ### 8. Exams

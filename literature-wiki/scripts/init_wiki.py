@@ -6,6 +6,7 @@ Creates (never overwrites):
   wiki/              index, vocabulary, pins, log, overview, and the page directories
   AGENTS.md          the editing contract for Codex
   CLAUDE.md          the same editing contract for Claude
+  README.md          how to read the wiki, ask Claude on the site, and take the exams
   wiki.yaml          name and logo mark used by the static site
   papers.csv         corpus template (index,title,year,venue,category,priority,direct_pdf_url)
   references.bib     empty BibTeX file
@@ -194,6 +195,8 @@ def main() -> None:
     contract = contract.replace("{name}", args.name).replace("{topic}", args.topic)
     write_new(root / "AGENTS.md", contract, created)
     write_new(root / "CLAUDE.md", contract, created)
+    readme = (SKILL / "templates" / "README.md").read_text(encoding="utf-8")
+    write_new(root / "README.md", readme.replace("{name}", args.name).replace("{topic}", args.topic), created)
     mark = args.mark or args.name[:1].upper()
     write_new(root / "wiki.yaml", f'name: "{args.name}"\nmark: "{mark}"\n', created)
     write_new(root / "papers.csv", "index,title,year,venue,category,priority,direct_pdf_url\n", created)
