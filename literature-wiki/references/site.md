@@ -38,7 +38,8 @@ opens straight from disk with no server or network. Rebuild after every wiki edi
    number and `tex` to the arXiv position. When there is no arXiv source or no image
    file, cut the figure from the PDF with `crop: {page, box}` and give a `caption`.
 4. `python3 .tools/build_site.py --check-figures` confirms each `fig` number against the
-   PDF caption; fix anything it reports.
+   PDF caption, matching `caption` when one is given; when the arXiv caption differs from
+   the PDF's, give the PDF's as `caption`. Fix anything it reports.
 
 ## Chat panel
 

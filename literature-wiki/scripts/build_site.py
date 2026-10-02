@@ -102,7 +102,7 @@ def index_entries() -> tuple[dict[str, dict], dict[str, str]]:
         if line.startswith("## "):
             in_papers = line.startswith("## Papers")
         elif line.startswith("### ") and in_papers:
-            category = line[4:].strip()
+            category = re.sub(r"\s*\(\d+\).*$", "", line[4:]).strip()
         m = INDEX_ENTRY_RE.match(line)
         if m:
             rel = (m.group(1) or m.group(2)).strip()
@@ -674,7 +674,8 @@ def check_figures(pages: dict[str, Page]) -> int:
             text = subprocess.run(["pdftotext", str(ROOT / paper.meta["local_pdf"]), "-"],
                                   capture_output=True, text=True).stdout
             # Compare letters only: the PDF text layer splits words and drops hyphens.
-            want = re.sub(r"[^a-z]", "", (fig or {}).get("caption", "").lower())[:30]
+            # A caption override is used when the arXiv caption differs from the PDF's.
+            want = re.sub(r"[^a-z]", "", (spec.get("caption") or (fig or {}).get("caption", "")).lower())[:30]
             found = any(want and want in re.sub(r"[^a-z]", "", text[m.end():m.end() + 300].lower())
                         for m in re.finditer(rf"(?:Figure|Fig\.?|F\s?IG\s?\.?)\s*{spec['fig']}\s*[.:]", text, re.I))
             if not found:
