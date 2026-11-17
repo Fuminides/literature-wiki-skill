@@ -1,0 +1,14 @@
+{
+  "name": "fuminides-literature-wiki",
+  "description": "Skills for building and maintaining source-grounded research wikis.",
+  "owner": {
+    "name": "Fuminides"
+  },
+  "plugins": [
+    {
+      "name": "literature-wiki",
+      "source": "./",
+      "description": "Turn a curated collection of research papers into a source-grounded wiki, textbook, searchable offline site and exams."
+    }
+  ]
+}

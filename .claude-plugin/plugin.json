@@ -1,0 +1,20 @@
+{
+  "name": "literature-wiki",
+  "version": "1.0.0",
+  "description": "Build and maintain source-grounded research wikis with paper analysis, synthesis, textbooks, searchable offline sites and exams.",
+  "author": {
+    "name": "Fuminides"
+  },
+  "homepage": "https://github.com/Fuminides/literature-wiki-skill#readme",
+  "repository": "https://github.com/Fuminides/literature-wiki-skill",
+  "license": "MIT",
+  "keywords": ["research", "literature-review", "wiki", "papers", "textbook"],
+  "skills": [
+    "./literature-wiki",
+    "./create-wiki",
+    "./add-papers",
+    "./wiki-exams",
+    "./serve-wiki",
+    "./update-wiki"
+  ]
+}
